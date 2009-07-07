@@ -1,0 +1,5 @@
+; $Id$
+name = Quantcast
+description = Integration with quantcast.com.
+package = Other
+core = 6.x

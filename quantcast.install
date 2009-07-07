@@ -1,0 +1,12 @@
+<?php
+
+// $Id$
+
+/**
+ * @file
+ * Installation file for the Quantcast module.
+ */
+
+function quantcast_uninstall() {
+  variable_del('quantcast_tag');
+}
