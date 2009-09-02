@@ -35,19 +35,15 @@ function quantcast_menu() {
   return $items;
 }
 
-
-/**
-* hook_init() implementation
-*/
-function quantcast_init() {
-  global $user;
-
-  $region = 'closure';
-
-  $snippet = variable_get('quantcast_tag', '');
+function quantcast_footer($main = 0) {
   
+  $snippet = variable_get('quantcast_tag', '');
+    
   if (!empty($snippet)) {
-    drupal_add_js($snippet, 'inline', $region);
+    return $snippet;
   }
-
+  else {
+    return '';
+  }
 }
+
