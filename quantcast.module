@@ -42,8 +42,7 @@ function quantcast_menu() {
 function quantcast_init() {
   global $user;
 
-  $region = 'footer';
-  $custom_js = variable_get('contenture_javascript_customizations', CONTENTURE_SAMPLE_JS);
+  $region = 'closure';
 
   $snippet = variable_get('quantcast_tag', '');
   
