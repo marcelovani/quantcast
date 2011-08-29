@@ -1,4 +1,8 @@
 name = Quantcast
-description = Integration with quantcast.com.
-package = Other
-core = 6.x
+description = Integration with Quantcast.com media measurement and web analytics service.
+core = 7.x
+package = Statistics
+configure = admin/config/system/quantcast
+files[] = quantcast.install
+files[] = quantcast.module
+files[] = quantcast.admin.inc
