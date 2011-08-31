@@ -1,49 +1,96 @@
-<?php 
+<?php
 
 /**
-* @file
-* Drupal Module: Quantcast
-*
-* Provides integration with Quantcast.com. 
-*
-* @Author: Irakli Nadareishvili. <a href="http://phase2technology.com">Phase2 Technology</a>
-*/
+ * @file
+ * Drupal Module: Quantcast
+ *
+ * Provides integration with Quantcast.com media measurement and web analytics service.
+ *
+ * @Author: Irakli Nadareishvili. <a href="http://phase2technology.com">Phase2 Technology</a>
+ *          Full refactoring and new features by Maciej Zgadzaj (http://zgadzaj.com/)
+ */
 
 
-/** 
-* hook_perm implementation
-*/ 
+/**
+ * Implementation of hook_help().
+ */
+function quantcast_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/system/quantcast':
+      return t('<a href="@qc_url">Quantcast</a> is a free (registration required) media measurement and web analytics service that allows users to view audience statistics for millions of websites.', array('@qc_url' => 'http://www.quantcast.com/'));
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
 function quantcast_perm() {
   return array('administer quantcast');
 }
 
 /**
-* hook_menu() implementation
-*/
+ * Implementation of hook_menu().
+ */
 function quantcast_menu() {
-
   $items['admin/settings/quantcast'] = array(
-    'title' => 'Quantcast',
-    'description' => 'Configure the settings for Quantcast.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('quantcast_admin_settings_form'),
-    'access arguments' => array('administer quantcast'),
-    'file' => 'quantcast.admin.inc',
-    'type' => MENU_NORMAL_ITEM,
+    'title'             => 'Quantcast',
+    'description'       => 'Configure settings for the quantcast module.',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('quantcast_admin_settings_form'),
+    'access arguments'  => array('administer quantcast'),
+    'file'              => 'quantcast.admin.inc',
+    'type'              => MENU_NORMAL_ITEM,
   );
-
   return $items;
 }
 
-function quantcast_footer($main = 0) {
-  
-  $snippet = variable_get('quantcast_tag', '');
-    
-  if (!empty($snippet)) {
-    return $snippet;
-  }
-  else {
-    return '';
+/**
+ * Implementation of hook_init().
+ */
+function quantcast_init() {
+  $qacct = variable_get('quantcast_account', '');
+  if (!empty($qacct)) {
+    // Javascript version.
+    $script  = 'var _qevents = _qevents || [];';
+    $script .= '(function() {';
+    $script .= 'var elem = document.createElement("script");';
+    $script .= 'elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";';
+    $script .= 'elem.async = true;';
+    $script .= 'elem.type = "text/javascript";';
+    $script .= 'var scpt = document.getElementsByTagName("script")[0];';
+    $script .= 'scpt.parentNode.insertBefore(elem, scpt);';
+    $script .= '})();';
+    $script .= '_qevents.push({';
+    $script .= 'qacct:' . drupal_to_js($qacct);
+    $script .= '});';
+    drupal_add_js($script, 'inline', variable_get('quantcast_js_scope', 'footer'));
+    // Noscript version.
+    if (variable_get('quantcast_js_scope', 'footer') == 'header') {
+      drupal_set_html_head(_quantcast_noscript_tag());
+    }
   }
 }
 
+/**
+ * Implementation of hook_footer().
+ */
+function quantcast_footer() {
+  if (variable_get('quantcast_js_scope', 'footer') == 'footer') {
+    return _quantcast_noscript_tag();
+  }
+}
+
+/**
+ * Returns noscript version of Quantcast tag.
+ */
+function _quantcast_noscript_tag() {
+  $qacct = variable_get('quantcast_account', '');
+  if (!empty($qacct)) {
+    $noscript  = '<noscript>';
+    $noscript .= '<div style="display:none;">';
+    $noscript .= '<img src="//pixel.quantserve.com/pixel/' . $qacct . '.gif" border="0" height="1" width="1" alt="Quantcast"/>';
+    $noscript .= '</div>';
+    $noscript .= '</noscript>';
+    return $noscript;
+  }
+}

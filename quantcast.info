@@ -1,4 +1,4 @@
 name = Quantcast
-description = Integration with quantcast.com.
-package = Other
+description = Provides integration with Quantcast.com media measurement and web analytics service.
+package = Statistics
 core = 6.x
