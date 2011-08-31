@@ -1,5 +1,5 @@
 name = Quantcast
-description = Integration with Quantcast.com media measurement and web analytics service.
+description = Provides integration with Quantcast.com media measurement and web analytics service.
 core = 7.x
 package = Statistics
 configure = admin/config/system/quantcast

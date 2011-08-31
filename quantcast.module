@@ -4,7 +4,7 @@
  * @file
  * Drupal Module: Quantcast
  *
- * Provides integration with Quantcast.com.
+ * Provides integration with Quantcast.com media measurement and web analytics service.
  *
  * @Author: Irakli Nadareishvili. <a href="http://phase2technology.com">Phase2 Technology</a>
  *          Drupal 7 implementation, refactoring and new features by Maciej Zgadzaj (http://zgadzaj.com/)
@@ -38,7 +38,7 @@ function quantcast_permission() {
 function quantcast_menu() {
   $items['admin/config/system/quantcast'] = array(
     'title'             => 'Quantcast',
-    'description'       => 'Configure the settings for Quantcast.',
+    'description'       => 'Configure settings for the quantcast module.',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('quantcast_admin_settings_form'),
     'access arguments'  => array('administer quantcast'),
@@ -49,7 +49,7 @@ function quantcast_menu() {
 }
 
 /**
- * Implementation of hook_page_alter().
+ * Implements hook_page_alter().
  */
 function quantcast_page_alter(&$page) {
   $qacct = variable_get('quantcast_account', '');
