@@ -7,7 +7,7 @@
  * Provides integration with Quantcast.com media measurement and web analytics service.
  *
  * @Author: Irakli Nadareishvili. <a href="http://phase2technology.com">Phase2 Technology</a>
- *          Full refactoring and new features by Maciej Zgadzaj (http://zgadzaj.com/)
+ *          Drupal 7 implementation, refactoring and new features by Maciej Zgadzaj (http://zgadzaj.com/)
  */
 
 
@@ -45,52 +45,45 @@ function quantcast_menu() {
 }
 
 /**
- * Implementation of hook_init().
+ * Implementation of hook_theme().
  */
-function quantcast_init() {
+function quantcast_theme() {
+  $path = drupal_get_path('module', 'quantcast');
+  return array(
+    'quantcast_tag_full' => array(
+      'template'  => 'quantcast-tag-full',
+      'path'      => "$path/theme",
+      'arguments' => array('vars' => NULL),
+    ),
+    'quantcast_tag_head' => array(
+      'template'  => 'quantcast-tag-head',
+      'path'      => "$path/theme",
+      'arguments' => array('vars' => NULL),
+    ),
+    'quantcast_tag_body' => array(
+      'template'  => 'quantcast-tag-body',
+      'path'      => "$path/theme",
+      'arguments' => array('vars' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implementation of template_preprocess_page().
+ */
+function quantcast_preprocess_page(&$variables) {
   $qacct = variable_get('quantcast_account', '');
   if (!empty($qacct)) {
-    // Javascript version.
-    $script  = 'var _qevents = _qevents || [];';
-    $script .= '(function() {';
-    $script .= 'var elem = document.createElement("script");';
-    $script .= 'elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";';
-    $script .= 'elem.async = true;';
-    $script .= 'elem.type = "text/javascript";';
-    $script .= 'var scpt = document.getElementsByTagName("script")[0];';
-    $script .= 'scpt.parentNode.insertBefore(elem, scpt);';
-    $script .= '})();';
-    $script .= '_qevents.push({';
-    $script .= 'qacct:' . drupal_to_js($qacct);
-    $script .= '});';
-    drupal_add_js($script, 'inline', variable_get('quantcast_js_scope', 'footer'));
-    // Noscript version.
-    if (variable_get('quantcast_js_scope', 'footer') == 'header') {
-      drupal_set_html_head(_quantcast_noscript_tag());
+    $scope = variable_get('quantcast_js_scope', 'closure');
+    $vars = array(
+      'pcode' => variable_get('quantcast_account', ''),
+    );
+    if ($scope == 'split') {
+      $variables['head'] .= theme('quantcast_tag_head', $vars);
+      $variables['closure'] .= theme('quantcast_tag_body', $vars);
     }
-  }
-}
-
-/**
- * Implementation of hook_footer().
- */
-function quantcast_footer() {
-  if (variable_get('quantcast_js_scope', 'footer') == 'footer') {
-    return _quantcast_noscript_tag();
-  }
-}
-
-/**
- * Returns noscript version of Quantcast tag.
- */
-function _quantcast_noscript_tag() {
-  $qacct = variable_get('quantcast_account', '');
-  if (!empty($qacct)) {
-    $noscript  = '<noscript>';
-    $noscript .= '<div style="display:none;">';
-    $noscript .= '<img src="//pixel.quantserve.com/pixel/' . $qacct . '.gif" border="0" height="1" width="1" alt="Quantcast"/>';
-    $noscript .= '</div>';
-    $noscript .= '</noscript>';
-    return $noscript;
+    else {
+      $variables[$scope] .= theme('quantcast_tag_full', $vars);
+    }
   }
 }

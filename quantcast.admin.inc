@@ -31,12 +31,13 @@ function quantcast_admin_settings_form(&$form_state) {
   $form['advanced']['quantcast_js_scope'] = array(
     '#type'           => 'select',
     '#title'          => t('Javascript Scope'),
-    '#description'    => t('Quantcast recommends adding its Javascript code to the footer, right before &lt;/body&gt; tag and any other measurement tags. See <a href="@qc_implementation_guide_url">Web Measurement Implementation Guide</a> for more details.', array('@qc_implementation_guide_url' => 'http://www.quantcast.com/learning-center/guides/webmeasurement')),
+    '#description'    => t('Quantcast recommends adding its Javascript code to the footer, right before &lt;/body&gt; tag and any other measurement tags. Splitting the tag into two components should additionally optimize the performance of the Quantcast asynchronous tag. See <a href="@qc_implementation_guide_url">Web Measurement Implementation Guide</a> for more details.', array('@qc_implementation_guide_url' => 'http://www.quantcast.com/learning-center/guides/webmeasurement')),
     '#options'        => array(
       'header'          => t('Header'),
-      'footer'          => t('Footer'),
+      'closure'         => t('Footer'),
+      'split'           => t('Split'),
     ),
-    '#default_value'  => variable_get('quantcast_js_scope', 'footer'),
+    '#default_value'  => variable_get('quantcast_js_scope', 'closure'),
   );
   return system_settings_form($form);
 }
