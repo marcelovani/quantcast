@@ -73,9 +73,41 @@ function quantcast_theme() {
 }
 
 /**
+ * Based on visibility setting this function returns TRUE if scripts code should
+ * be added for the current role and otherwise FALSE.
+ */
+function _quantcast_visibility_roles($account) {
+  $visibility = variable_get('quantcast_visibility_roles', 0);
+  $enabled = $visibility;
+  $roles = variable_get('quantcast_roles', array());
+
+  if (array_sum($roles) > 0) {
+    // One or more roles are selected.
+    foreach (array_keys($account->roles) as $rid) {
+      // Is the current user a member of one of these roles?
+      if (isset($roles[$rid]) && $rid == $roles[$rid]) {
+        $enabled = !$visibility;
+        break;
+      }
+    }
+  }
+  else {
+    // No role is selected, add script.
+    $enabled = TRUE;
+  }
+
+  return $enabled;
+}
+
+/**
  * Implements hook_page_build().
  */
 function quantcast_page_build(&$page) {
+  global $user;
+  if (!_quantcast_visibility_roles($user)) {
+    return;
+  }
+
   $qacct = variable_get('quantcast_account', '');
   if (!empty($qacct)) {
     $scope = variable_get('quantcast_js_scope', 'page_bottom');
