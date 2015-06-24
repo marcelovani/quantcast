@@ -9,18 +9,25 @@
  * Implements hook_admin_settings().
  */
 function quantcast_admin_settings_form() {
+  // Tabs.
+  $form['tabs'] = array(
+    '#type' => 'vertical_tabs',
+    '#title'          => t('General settings'),
+  );
+
   // General settings.
-  $form['account'] = array(
+  $form['tabs']['account'] = array(
     '#type'           => 'fieldset',
     '#title'          => t('General settings'),
   );
-  $form['account']['quantcast_account'] = array(
+  $form['tabs']['account']['quantcast_account'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Quantcast P-Code'),
     '#default_value'  => variable_get('quantcast_account', ''),
     '#required'       => TRUE,
     '#description'    => t('If you do not already have a Quantcast P-Code, please acquire it by registering at <a href="@qc_url">Quantcast.com</a>.', array('@qc_url' => 'http://www.quantcast.com/user/signup')),
   );
+
   // Advanced settings.
   $form['advanced'] = array(
     '#type'           => 'fieldset',
