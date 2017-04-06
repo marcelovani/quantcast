@@ -100,6 +100,25 @@ function _quantcast_visibility_roles($account) {
 }
 
 /**
+ * Set and get Quantcast events for tracking.
+ *
+ * Use this to set Quantcast events programmatically, such as labels.
+ *
+ * @param array $event
+ *   The event data to be set, optional.
+ *
+ * @return array
+ *   All events that have been set as key,value array.
+ */
+function quantcast_event_data(array $event = array()) {
+  static $properties = array();
+  if (!empty($event)) {
+    $properties = array_merge($properties, $event);
+  }
+  return $properties;
+}
+
+/**
  * Implements hook_page_build().
  */
 function quantcast_page_build(&$page) {
@@ -115,8 +134,19 @@ function quantcast_page_build(&$page) {
   $qacct = check_plain(variable_get('quantcast_account', ''));
   if (!empty($qacct)) {
     $scope = variable_get('quantcast_js_scope', 'page_bottom');
+    // Get any set event data.
+    $events = quantcast_event_data();
+    $code_url = $qacct . '.gif';
+    if (!empty($events)) {
+      $code_url .= '?' . http_build_query($events);
+    }
+    $params = array(
+      'qacct' => $qacct,
+    );
     $vars = array(
       'pcode' => $qacct,
+      'quantcast_code_json' => json_encode(array_merge($params, $events)),
+      'quantcast_code_url' => $code_url,
     );
     if ($scope == 'split') {
       $head = array(

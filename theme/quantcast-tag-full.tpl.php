@@ -9,9 +9,9 @@
     var scpt = document.getElementsByTagName('script')[0];
     scpt.parentNode.insertBefore(elem, scpt);
   })();
-  _qevents.push({qacct:"<?php print $vars['pcode']; ?>"});
+  _qevents.push(<?php print $vars['quantcast_code_json']; ?>);
 //--><!]]>
 </script>
 <noscript>
-  <div style="display:none;"><img src="//pixel.quantserve.com/pixel/<?php print $vars['pcode']; ?>.gif" border="0" height="1" width="1" alt="Quantcast"/></div>
+  <div style="display:none;"><img src="//pixel.quantserve.com/pixel/<?php print $vars['quantcast_code_url']; ?>" border="0" height="1" width="1" alt="Quantcast"/></div>
 </noscript>
