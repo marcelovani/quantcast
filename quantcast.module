@@ -112,11 +112,11 @@ function quantcast_page_build(&$page) {
     return;
   }
 
-  $qacct = variable_get('quantcast_account', '');
+  $qacct = check_plain(variable_get('quantcast_account', ''));
   if (!empty($qacct)) {
     $scope = variable_get('quantcast_js_scope', 'page_bottom');
     $vars = array(
-      'pcode' => variable_get('quantcast_account', ''),
+      'pcode' => $qacct,
     );
     if ($scope == 'split') {
       $head = array(
